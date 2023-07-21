@@ -5,12 +5,12 @@
 
 # nsbox
 
-Python sandbox runners for executing code in isolation aka nsbox.
+Code sandbox runners for executing code in isolation aka nsbox.
 
 Supports a memory [virtual read/write file system](#virtual-file-system) within the sandbox,
 allowing text or binary files to be sent and returned.
 
-A client sends Python code to a nsbox, the nsbox executes the code, and finally the results of the execution are returned to the client.
+A client sends code to a nsbox, the nsbox executes the code, and finally the results of the execution are returned to the client.
 
 ```mermaid
 %%{init: { 'sequence': {'mirrorActors': false, 'messageFontWeight': 300, 'actorFontFamily': '-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif' } } }%%
@@ -19,17 +19,17 @@ sequenceDiagram
 actor Client
 participant nsbox
 participant NsJail
-participant Python as Python Subprocess
+participant Code as Code Subprocess
 
 Client ->>+ nsbox: HTTP POST
-nsbox ->>+ NsJail: Python code
-NsJail ->>+ Python: Python code
-Python -->>- NsJail: Execution result
+nsbox ->>+ NsJail: Runs code
+NsJail ->>+ Code: Run code
+Code -->>- NsJail: Execution result
 NsJail -->>- nsbox: Execution result
 nsbox -->>- Client: JSON response
 ```
 
-The code is executed in a Python process that is launched through [NsJail], which is responsible for sandboxing the Python process.
+The code is executed in a process that is launched through [NsJail], which is responsible for sandboxing the Python process.
 
 The output returned by nsbox is truncated at around 1 MB by default, but this can be [configured](#gunicorn).
 
