@@ -41,10 +41,14 @@ See [`nsapi.py`] and [`resources`] for API documentation.
 
 ## Running nsbox
 
-A Docker image is available in the [GitHub Container Registry]. A container can be started with the following command, which will also pull the image if it doesn't currently exist locally:
-
+### Build the image
 ```
-docker run --ipc=none --privileged -p 8060:8060 ghcr.io/python-discord/nsbox
+docker build -t --no-cache nsbox .
+```
+
+### Run container
+```
+docker run --ipc=none --privileged -p 8060:8060 nsbox
 ```
 
 To run it in the background, use the `-d` option. See the documentation on [`docker run`] for more information.
