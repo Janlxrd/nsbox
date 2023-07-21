@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools-git-versioning>=1.8"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "nsbox"
+description = "HTTP REST API for sandboxed execution of arbitrary Python code."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Python Discord", email = "info@pythondiscord.com"}]
+keywords = ["sandbox", "nsjail", "HTTP REST API"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Topic :: Security",
+    "Topic :: Software Development :: Interpreters",
+]
+dynamic = ["version"]
+
+requires-python = ">=3.11"
+dependencies = [
+    "falcon>=3.0.1",
+    "jsonschema>=4.0",
+    "protobuf>=3.19",
+]
+
+[project.optional-dependencies]
+gunicorn = ["gunicorn>=20.1"]  # Lowest which supports wsgi_app in config.
+sentry = ["sentry-sdk[falcon]>=1.16.0"] # Minimum of 1.16.0 required for Falcon 3.0 support (getsentry/sentry-python#1733)
+
+[project.urls]
+source = "https://github.com/python-discord/nsbox"
+tracker = "https://github.com/python-discord/nsbox/issues"
+
+[project.scripts]
+nsbox = "nsbox.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["nsbox*"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_callback = "scripts.version:get_version"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if DEBUG"
+]
+
+[tool.coverage.run]
+branch = true
+data_file = "${COVERAGE_DATAFILE-.coverage}"
+include = ["nsbox/*"]
+omit =  ["nsbox/config_pb2.py"]
+relative_files = true
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+force-exclude = "nsbox/config_pb2.py"
+
+[tool.isort]
+line_length = 100
+profile = "black"
+skip_gitignore = true
+src_paths = ["nsbox"]
+extend_skip = ["nsbox/config_pb2.py"]

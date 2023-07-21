@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  nsbox:
+    container_name: nsbox_dev
+    hostname: nsbox_dev
+    privileged: true
+    image: ghcr.io/python-discord/nsbox${IMAGE_SUFFIX:--venv:dev}
+    pull_policy: never
+    ports:
+     - "8060:8060"
+    init: true
+    ipc: none
+    tty: true
+    environment:
+      nsbox_DEBUG: 1
+      PYTHONDONTWRITEBYTECODE: 1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: venv
+      args:
+        DEV: 1
+      cache_from:
+        - ghcr.io/python-discord/nsbox:latest
+    volumes:
+      - .:/nsbox
+      - user-base:/nsbox/user_base
+
+volumes:
+  user-base:

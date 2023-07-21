@@ -1,0 +1,49 @@
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
+      PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements/lint.pip
+
+      - name: Install Python dependencies
+        run: pip install -U -r requirements/lint.pip
+
+      - name: Pre-commit environment cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PRE_COMMIT_HOME }}
+          key: "precommit-0-${{ runner.os }}-${{ env.PRE_COMMIT_HOME }}-\
+            ${{ steps.python.outputs.python-version }}-\
+            ${{ hashFiles('./.pre-commit-config.yaml') }}"
+
+      # Skip the flake8 hook because the following command will run it.
+      - name: Run pre-commit hooks
+        id: run-pre-commit-hooks
+        run: |
+          SKIP=flake8 pre-commit run --all-files
+          pre-commit run --all-files --hook-stage manual flake8-annotate
+
+      # Show the log to debug failures.
+      - name: Show pre-commit log
+        if: always() && steps.run-pre-commit-hooks.outcome == 'failure'
+        run: |
+          set -eu
+          if [ -f "${PRE_COMMIT_HOME}/pre-commit.log" ]; then
+            cat "${PRE_COMMIT_HOME}/pre-commit.log"
+          fi

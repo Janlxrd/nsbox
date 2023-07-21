@@ -1,0 +1,14 @@
+# Exclude everything
+*
+
+# Make exceptions for what's needed
+!.git/
+!config/
+!requirements/
+!scripts/
+!nsbox/
+!tests/
+!LICENSE
+!NOTICE
+!pyproject.toml
+!README.md
