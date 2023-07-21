@@ -21,8 +21,6 @@ services:
       target: venv
       args:
         DEV: 1
-      cache_from:
-        - ghcr.io/python-discord/nsbox:latest
     volumes:
       - .:/nsbox
       - user-base:/nsbox/user_base
