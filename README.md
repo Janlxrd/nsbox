@@ -17,13 +17,13 @@ A client sends code to a nsbox, the nsbox executes the code, and finally the res
 sequenceDiagram
 
 actor Client
-participant NsBox
+participant nsbox
 participant NsJail
 participant Code as Code Subprocess
 
 Client ->>+ nsbox: HTTP POST
 nsbox ->>+ NsJail: Runs code
-NsJail ->>+ Code: Ran code
+NsJail ->>+ Code: Run code
 Code -->>- NsJail: Execution result
 NsJail -->>- nsbox: Execution result
 nsbox -->>- Client: JSON response
