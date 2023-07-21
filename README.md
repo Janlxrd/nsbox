@@ -29,7 +29,7 @@ NsJail -->>- nsbox: Execution result
 nsbox -->>- Client: JSON response
 ```
 
-The code is executed in a process that is launched through [NsJail], which is responsible for sandboxing the Python process.
+The code is executed in a process that is launched through [NsJail], which is responsible for sandboxing the process.
 
 The output returned by nsbox is truncated at around 1 MB by default, but this can be [configured](#gunicorn).
 
