@@ -43,6 +43,8 @@ RUN chmod +x /usr/sbin/nsjail
 # Install Node.js (and npm, which comes bundled with Node.js)
 RUN apt-get -y update && apt-get -y install nodejs
 
+# Install Csharp compiler
+RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get -y install mono-complete
 
 # ------------------------------------------------------------------------------
 FROM base as venv

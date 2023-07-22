@@ -43,7 +43,7 @@ See [`nsapi.py`] and [`resources`] for API documentation.
 
 ### Build the image
 ```
-docker build -t --no-cache nsbox .
+docker buildx build --no-cache -t nsbox .
 ```
 
 ### Run container

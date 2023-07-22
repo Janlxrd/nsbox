@@ -27,7 +27,7 @@ class EvalResource:
     REQ_SCHEMA = {
         "type": "object",
         "properties": {
-            "language": {"type": "string", "enum": ["python", "nodejs"]},
+            "language": {"type": "string", "enum": ["python", "nodejs", "csharp"]},
             "input": {"type": "string"},
             "args": {"type": "array", "items": {"type": "string"}},
             "files": {
@@ -52,9 +52,10 @@ class EvalResource:
         ],
     }
 
-    def __init__(self, nsjail_py: NsJail, nsjail_js: NsJail):
+    def __init__(self, nsjail_py: NsJail, nsjail_js: NsJail, nsjail_cs: NsJail):
         self.nsjail_py = nsjail_py
         self.nsjail_js = nsjail_js
+        self.nsjail_cs = nsjail_cs
 
     @validate(REQ_SCHEMA)
     def on_post(self, req: falcon.Request, resp: falcon.Response) -> None:
@@ -99,6 +100,11 @@ class EvalResource:
         ...    "args": ["-e", "console.log('Hello');"]
         ... }
 
+        >>> {
+        ...    "language": "csharp",
+        ...    "input": "Console.WriteLine('hi');"
+        ... }
+
         Response format:
 
         >>> {
@@ -125,8 +131,8 @@ class EvalResource:
         body: dict[str, Union[str, list[str], list[dict[str, str]]]] = req.media
         language = body.get("language")
 
-        if language not in ["python", "nodejs"]:
-            raise falcon.HTTPBadRequest(title="Invalid language", description="Supported languages are 'python' and 'nodejs'")
+        if language not in ["python", "nodejs", "csharp"]:
+            raise falcon.HTTPBadRequest(title="Invalid language", description="Supported languages are 'python', 'nodejs' and 'csharp'")
 
         if language == "python":
             if "input" in body:
@@ -156,9 +162,23 @@ class EvalResource:
             except Exception:
                 log.exception("An exception occurred while trying to process the request")
                 raise falcon.HTTPInternalServerError
+        elif language == "csharp":
+            if "input" in body:
+                body.setdefault("args", ["-e"])
+                body["args"].append(body["input"])
+            try:
+                result = self.nsjail_cs.run_code(
+                    run_args=body["args"],
+                    files=[FileAttachment.from_dict(file) for file in body.get("files", [])],
+                )
+            except ParsingError as e:
+                raise falcon.HTTPBadRequest(title="Request file is invalid", description=str(e))
+            except Exception:
+                log.exception("An exception occurred while trying to process the request")
+                raise falcon.HTTPInternalServerError
         else:
             # This should never happen if the schema is correctly enforced, but it's a good practice to handle it.
-            raise falcon.HTTPBadRequest(title="Invalid language", description="Supported languages are 'python' and 'nodejs'")
+            raise falcon.HTTPBadRequest(title="Invalid language", description="Supported languages are 'python', 'nodejs' and 'csharp'")
 
         resp.media = {
             "stdout": result.stdout,
