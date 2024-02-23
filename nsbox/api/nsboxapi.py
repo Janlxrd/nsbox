@@ -30,4 +30,4 @@ class NsAPI(falcon.App):
         nsjail_py = NsJail(*args, **kwargs)
         nsjail_js = NsJail(*args, config_path='./config/nsbox_js.cfg', **kwargs)
         nsjail_cs = NsJail(*args, config_path='./config/nsbox_cs.cfg', **kwargs)
-        self.add_route("/eval", EvalResource(nsjail_py, nsjail_js, nsjail_cs))
+        self.add_route("/eval", EvalResource(nsjail_py, nsjail_js))
