@@ -52,10 +52,9 @@ class EvalResource:
         ],
     }
 
-    def __init__(self, nsjail_py: NsJail, nsjail_js: NsJail, nsjail_cs: NsJail):
+    def __init__(self, nsjail_py: NsJail, nsjail_js: NsJail):
         self.nsjail_py = nsjail_py
         self.nsjail_js = nsjail_js
-        self.nsjail_cs = nsjail_cs
 
     @validate(REQ_SCHEMA)
     def on_post(self, req: falcon.Request, resp: falcon.Response) -> None:
